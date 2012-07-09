@@ -1,0 +1,15 @@
+# Pycharm設定ディレクトリを除外
+.idea/
+# setuptoolsから生成されるディレクトリ/ファイルの除外
+build/
+dist/
+Pytumb.egg-info
+# .pycファイルの除外
+*.pyc
+*.pyo
+# keys.pyファイルの除外
+keys.py
+# other
+build_memo.txt
+*.zip
+log.txt
