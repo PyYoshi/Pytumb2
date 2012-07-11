@@ -39,7 +39,7 @@ class OAuthHandler(AuthHandler):
     OAUTH_ROOT = '/oauth/'
 
     def __init__(self,consumer_key,consumer_secret,callback_url=None,secure=False):
-        self.__consumer = OAuthHook(consumer_key=consumer_key,consumer_secret=consumer_secret)
+        self._consumer = OAuthHook(consumer_key=consumer_key,consumer_secret=consumer_secret)
         self.callback_url = callback_url
         self.secure = secure
         self.__request_tokens = None
@@ -54,7 +54,7 @@ class OAuthHandler(AuthHandler):
 
     def __get_request_token(self):
         url = self.__gen_oauth_url('request_token')
-        res = requests.post(url,{'oauth_callback':self.callback_url},hooks={'pre_request':self.__consumer})
+        res = requests.post(url,{'oauth_callback':self.callback_url},hooks={'pre_request':self._consumer})
         qs = urlparse.parse_qs(res.text)
         request_token = qs['oauth_token'][0]
         request_secret = qs['oauth_token_secret'][0]
@@ -73,8 +73,8 @@ class OAuthHandler(AuthHandler):
 
     def get_access_token(self,verifier):
         url = self.__gen_oauth_url('access_token')
-        self.__consumer.token = Token(self.__request_tokens[0],self.__request_tokens[1])
-        res = requests.post(url,{'oauth_verifier':verifier},hooks={'pre_request':self.__consumer})
+        self._consumer.token = Token(self.__request_tokens[0],self.__request_tokens[1])
+        res = requests.post(url,{'oauth_verifier':verifier},hooks={'pre_request':self._consumer})
         qs = urlparse.parse_qs(res.content)
         access_token = qs['oauth_token'][0]
         access_token_secret = qs['oauth_token_secret'][0]
@@ -84,17 +84,18 @@ class OAuthHandler(AuthHandler):
     def set_access_token(self,access_token, access_token_secret):
         self.__access_tokens = [access_token,access_token_secret]
 
-    def apply_auth(self, url, method, headers, parameters):
+    def apply_auth(self, url, http_method, headers, parameters):
         if not self.__access_tokens:
             raise PytumbError("Requires access token. Please do OAuthHandler.set_access_token()") # access tokenがない場合Exception
         else:
-            self.__consumer.token = Token(self.__access_tokens[0],self.__access_tokens[1])
-        client = requests.session(hooks={'pre_request':self.__consumer})
-        if method == "GET":
+            self._consumer.token = Token(self.__access_tokens[0],self.__access_tokens[1])
+        client = requests.session(hooks={'pre_request':self._consumer})
+        # NOTICE: もしparameters配列のvalueがNoneで不具合が出る場合は、それは除外する関数を作成し対処すること。
+        if http_method == "GET":
             qs = urllib.urlencode(parameters)
             url = url + '?' + qs
             return client.get(url)
-        elif method == "POST":
+        elif http_method == "POST":
             return client.post(url,parameters)
         else:
-            raise PytumbError("This method( %s ) is not supported." % method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
+            raise PytumbError("This method( %s ) is not supported." % http_method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
