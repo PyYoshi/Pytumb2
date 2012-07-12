@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import urlparse as urlparse_lib
 
 import pytz
 
@@ -70,3 +71,15 @@ class Utils:
                     except ImportError:
                         raise ImportError("Can't load a json library")
         return json
+
+    @staticmethod
+    def unixtime2datetime(unixtimestamp):
+        return datetime.datetime.fromtimestamp(unixtimestamp)
+
+    @staticmethod
+    def urlparse(url):
+        return urlparse_lib.urlparse(url)
+
+    @staticmethod
+    def parse_qs(qs):
+        return urlparse_lib.parse_qs(qs)
