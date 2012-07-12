@@ -89,7 +89,8 @@ class API:
     def __check_file(self,filename, max_size, binary=True):
         """ description """
         file_size = os.path.getsize(filename)
-        if file_size > (max_size* 1024): raise PytumbError('File is too big, must be less than %d' % (max_size * 1024))
+        max_size = max_size * 10240
+        if file_size > max_size: raise PytumbError('File is too big, must be less than %d' % max_size)
         if binary:
             mode = 'rb'
         else:
@@ -509,6 +510,7 @@ class API:
         Warnings:
             none
         """
+        # TODO: バイナリファイルを一緒にポストできるように改良する。
         # Type checking
         if not state in [self.STATE_DRAFT,self.STATE_PUBLISHED,self.STATE_QUEUE]: raise PytumbError('Invalid state. Must be one of the values: API.STATE_PUBLISHED ,API.STATE_DRAFT ,API.STATE_QUEUE')
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
@@ -550,7 +552,16 @@ class API:
         if source:
             api_parameters['source'] = source
         elif files:
-            api_parameters['data_list'] = files
+            raise NotImplementedError
+            data = []
+            total_size = 0
+            for f in files:
+                fp, fp_size = self.__check_file(f, self.FILE_MAX_SIZE_IMAGE)
+                data.append(fp)
+                total_size += fp_size
+            max_size = self.FILE_MAX_SIZE_IMAGE * 10240
+            if total_size > max_size: raise PytumbError('File is too big, must be less than %d' % max_size)
+            api_parameters['data'] = data
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
@@ -767,8 +778,8 @@ class API:
         )
         return binder.execute()
 
-    def update_audio_post(self,my_blog_hostname, data, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None, caption=None, external_url=None):
+    def update_audio_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=list(),
+                        tweet=None, date=None, markdown=False, slug=None, caption=None, data=None, external_url=None):
         """ description
         Args:
             my_blog_hostname: str,
@@ -792,6 +803,7 @@ class API:
         Warnings:
             none
         """
+        # TODO: バイナリファイルを一緒にポストできるように改良する。
         # Type checking
         if not state in [self.STATE_DRAFT,self.STATE_PUBLISHED,self.STATE_QUEUE]: raise PytumbError('Invalid state. Must be one of the values: API.STATE_PUBLISHED ,API.STATE_DRAFT ,API.STATE_QUEUE')
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
@@ -830,6 +842,11 @@ class API:
             'external_url':external_url,
             'data':data
             }
+        if external_url:
+            api_parameters['external_url'] = external_url
+        elif data:
+            raise NotImplementedError
+            api_parameters['data'] = data
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
@@ -867,6 +884,7 @@ class API:
         Warnings:
             none
         """
+        # TODO: バイナリファイルを一緒にポストできるように改良する。
         # Type checking
         if not state in [self.STATE_DRAFT,self.STATE_PUBLISHED,self.STATE_QUEUE]: raise PytumbError('Invalid state. Must be one of the values: API.STATE_PUBLISHED ,API.STATE_DRAFT ,API.STATE_QUEUE')
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
@@ -906,6 +924,7 @@ class API:
         if embed:
             api_parameters['embed'] = embed
         elif data:
+            raise NotImplementedError
             api_parameters['data'] = data
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
