@@ -816,7 +816,7 @@ class API:
         Utils.check_type(external_url,'external_url',str)
         Utils.check_type(data,'data',str)
         if external_url and data: raise PytumbError('Either external_url or files.')
-        if not (external_url and data): raise PytumbError('Either external_url or files.')
+        if not external_url and not data: raise PytumbError('Either external_url or files.')
 
         # Setting
         self.blog_hostname = my_blog_hostname
@@ -839,10 +839,9 @@ class API:
             'markdown':markdown,
             'slug':slug,
             'caption':caption,
-            'external_url':external_url,
-            'data':data
             }
         if external_url:
+            if Utils.urlparse(external_url).scheme == 'https': raise PytumbError('Invalid external_url. Supports only http scheme.')
             api_parameters['external_url'] = external_url
         elif data:
             raise NotImplementedError
