@@ -24,6 +24,8 @@ class Utils:
         if p_obj != None:
             if class_or_type in [int,long]:
                 if not isinstance(long(p_obj),(int,long)): raise PytumbError("Invalid %s. Must be %s object."%(p_obj_name,class_or_type.__name__))
+            elif class_or_type in [str,unicode]:
+                if not isinstance(p_obj,(str,unicode)): raise PytumbError("Invalid %s. Must be %s object."%(p_obj_name,class_or_type.__name__))
             else:
                 if not isinstance(p_obj,class_or_type): raise PytumbError("Invalid %s. Must be %s object."%(p_obj_name,class_or_type.__name__))
 
