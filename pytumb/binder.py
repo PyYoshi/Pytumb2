@@ -37,15 +37,16 @@ class Binder:
                     raise PytumbError("This method( %s ) is not supported." % http_method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
             # Catch error and retry to run
             if self.api.retry_errors:
-                if res.status_code not in self.api.retry_errors:break
+                if res.status_code not in self.api.retry_errors: break
             else:
-                if res.status_code == 200:break
+                if res.status_code == 200: break
             # Sleep
             time.sleep(self.api.retry_delay)
             retries_performed += 1
         # Generate parser
         parser = ModelParser()
         self.api.last_response = res
+        self.api.last_api_parameters = self.api_parameters
         # Parse error
         if res.status_code not in (200,201,301):
             error_msg = parser.parse_error(res.content)
