@@ -13,8 +13,12 @@ class Utils:
     def join_string(l,string):
         if l != [] or l != None:
             ret = ""
-            for i in l:
-                ret += str(i) + string
+            l_len = len(l)
+            for i in range(l_len):
+                if i < l_len-1:
+                    ret += str(l[i]) + string
+                else:
+                    ret += str(l[i])
             return ret
         else:
             return None
