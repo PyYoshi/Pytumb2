@@ -34,7 +34,7 @@ class API:
     RESPONSE_TYPE_POST = 'post'
     RESPONSE_TYPE_UPDATEPOST = 'updatepost'
     RESPONSE_TYPE_USERINFO = 'userinfo'
-    RESPONSE_TYPE_DASHBOARD = 'dashbord'
+    RESPONSE_TYPE_DASHBOARD = 'dashboard'
     RESPONSE_TYPE_LIKES = 'likes'
     RESPONSE_TYPE_FOLLOWINGS = 'followings'
     RESPONSE_TYPE_RAW = 'raw'
@@ -239,7 +239,7 @@ class API:
                 e.g.) staff.tumblr.com
             post_type: str, The type of post to return,
                 Must be one of the values: None or API.POST_TYPE_TEXT, API.POST_TYPE_QUOTE, API.POST_TYPE_LINK, API.POST_TYPE_ANSWER, API.POST_TYPE_VIDEO, API.POST_TYPE_AUDIO, API.POST_TYPE_PHOTO, API.POST_TYPE_CHAT
-            post_id: str, post id
+            post_id: int, post id
             tag: list, Limits the response to posts with the specified tag
             limit: int, The number of results to return
                 1–20, inclusive
@@ -261,7 +261,7 @@ class API:
             endpoint = blog_hostname + '/' + 'posts' + '/' + post_type
         else:
             endpoint = blog_hostname + '/' + 'posts'
-        Utils.check_type(post_id,'post_id',str)
+        Utils.check_type(post_id,'post_id',int)
         Utils.check_type(tag,'tag',list)
         if not limit in range(1,21): raise PytumbError('Invalid limit. Must be one of the values: range(1,21)')
         Utils.check_type(offset,'offset',int)
@@ -896,7 +896,7 @@ class API:
         Utils.check_type(embed,'embed',str)
         Utils.check_type(data,'data',str)
         if embed and data: raise PytumbError('Either embed or data.')
-        if not (embed and data): raise PytumbError('Either source or data.')
+        if not embed and not data: raise PytumbError('Either source or data.')
 
         # Setting
         self.blog_hostname = my_blog_hostname
@@ -948,7 +948,7 @@ class API:
         Args:
             my_blog_hostname: str,
                 e.g.) staff.tumblr.com
-            post_id: str, The ID of the reblogged post on tumblelog
+            post_id: int, The ID of the reblogged post on tumblelog
             reblog_key: str, The reblog key for the reblogged post - get the reblog key with a /post request
             comment: str, A comment added tot the reblogged post
         Returns:
@@ -960,17 +960,17 @@ class API:
         """
         # Type checking
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
-        Utils.check_type(post_id,'post_id',str)
+        Utils.check_type(post_id,'post_id',int)
         Utils.check_type(reblog_key,'reblog_key',str)
         Utils.check_type(comment,'comment',str)
 
         # Setting
         secure = False
         api_method = self.API_METHOD_BLOG
-        endpoint = blog_hostname + '/' + 'post' + '/' + 'reblog'
+        endpoint = my_blog_hostname + '/' + 'post' + '/' + 'reblog'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'id':post_id,
@@ -994,6 +994,7 @@ class API:
         Args:
             my_blog_hostname: str,
                 e.g.) staff.tumblr.com
+            post_id: int, The ID of the reblogged post on tumblelog
         Returns:
             none
         Exceptions:
@@ -1003,16 +1004,16 @@ class API:
         """
         # Type checking
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
-        Utils.check_type(post_id,'post_id',str)
+        Utils.check_type(post_id,'post_id',int)
 
         # Setting
         self.blog_hostname = my_blog_hostname
         secure = False
         api_method = self.API_METHOD_BLOG
-        endpoint = blog_hostname + '/' + 'post' + '/' + 'delete'
+        endpoint = my_blog_hostname + '/' + 'post' + '/' + 'delete'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'id':post_id
@@ -1045,7 +1046,7 @@ class API:
         # Setting
         secure = False
         api_method = self.API_METHOD_USER
-        endpoint = 'user'
+        endpoint = 'info'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
         response_type = self.RESPONSE_TYPE_USERINFO
@@ -1065,7 +1066,7 @@ class API:
         )
         return binder.execute()
 
-    def get_dashbord(self, limit=20, offset=0, post_type=None, since_id=None, reblog_info=False, notes_info=False):
+    def get_dashbord(self, limit=20, offset=None, post_type=None, since_id=None, reblog_info=False, notes_info=False):
         """ description
         Args:
             post_type: str, The type of post to return,
@@ -1073,7 +1074,7 @@ class API:
             limit: int, The number of results to return
                 1–20, inclusive
             offset: int, Result to start at
-            since_id: str, Return posts that have appeared after this ID
+            since_id: int, Return posts that have appeared after this ID
             reblog_info: bool, Indicates whether to return reblog information (specify true or false). Returns the various reblogged_ fields.
             notes_info: bool, Indicates whether to return notes information (specify true or false). Returns note count and note metadata.
         Returns:
@@ -1087,7 +1088,7 @@ class API:
         if post_type in [self.POST_TYPE_TEXT, self.POST_TYPE_QUOTE, self.POST_TYPE_LINK, self.POST_TYPE_ANSWER, self.POST_TYPE_VIDEO,
                          self.POST_TYPE_AUDIO, self.POST_TYPE_PHOTO, self.POST_TYPE_CHAT]: raise PytumbError('Invalid post_type. Must be one of the values: None or API.POST_TYPE_TEXT, API.POST_TYPE_QUOTE, API.POST_TYPE_LINK, API.POST_TYPE_ANSWER, API.POST_TYPE_VIDEO, API.POST_TYPE_AUDIO, API.POST_TYPE_PHOTO, API.POST_TYPE_CHAT')
         if not limit in range(1,21): raise PytumbError('Invalid limit. Must be one of the values: range(1,21)')
-        Utils.check_type(since_id,'since_id',str)
+        Utils.check_type(since_id,'since_id',int)
         Utils.check_type(offset,'offset',int)
         Utils.check_type(reblog_info,'reblog_info',bool)
         Utils.check_type(notes_info,'notes_info',bool)
@@ -1099,7 +1100,7 @@ class API:
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
         response_type = self.RESPONSE_TYPE_DASHBOARD
-        response_list = True
+        response_list = False
         api_parameters = {
             'limit':limit,
             'offset':offset,
@@ -1143,7 +1144,7 @@ class API:
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
         response_type = self.RESPONSE_TYPE_LIKES
-        response_list = True
+        response_list = False
         api_parameters = {
             'limit':limit,
             'offset':offset
@@ -1183,7 +1184,7 @@ class API:
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
         response_type = self.RESPONSE_TYPE_FOLLOWINGS
-        response_list = True
+        response_list = False
         api_parameters = {
             'limit':limit,
             'offset':offset
@@ -1287,7 +1288,7 @@ class API:
             none
         """
         # Type checking
-        Utils.check_type(post_id,'post_id',str)
+        Utils.check_type(post_id,'post_id',int)
         Utils.check_type(reblog_key,'reblog_key',str)
 
         # Setting
@@ -1327,7 +1328,7 @@ class API:
             none
         """
         # Type checking
-        Utils.check_type(post_id,'post_id',str)
+        Utils.check_type(post_id,'post_id',int)
         Utils.check_type(reblog_key,'reblog_key',str)
 
         # Setting
