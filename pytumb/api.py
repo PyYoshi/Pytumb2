@@ -32,6 +32,7 @@ class API:
     RESPONSE_TYPE_FOLLOWERS = 'followers'
     RESPONSE_TYPE_BLOGPOSTS = 'blogposts'
     RESPONSE_TYPE_POST = 'post'
+    RESPONSE_TYPE_UPDATEPOST = 'updatepost'
     RESPONSE_TYPE_USERINFO = 'userinfo'
     RESPONSE_TYPE_DASHBOARD = 'dashbord'
     RESPONSE_TYPE_LIKES = 'likes'
@@ -319,8 +320,8 @@ class API:
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'queue'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = self.RESPONSE_TYPE_POST
-        response_list = True
+        response_type = self.RESPONSE_TYPE_BLOGPOSTS
+        response_list = False
         api_parameters = {
 
         }
@@ -358,8 +359,8 @@ class API:
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'draft'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = self.RESPONSE_TYPE_POST
-        response_list = True
+        response_type = self.RESPONSE_TYPE_BLOGPOSTS
+        response_list = False
         api_parameters = {
 
         }
@@ -397,8 +398,8 @@ class API:
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'submission'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = self.RESPONSE_TYPE_POST
-        response_list = True
+        response_type = self.RESPONSE_TYPE_BLOGPOSTS
+        response_list = False
         api_parameters = {
 
         }
@@ -457,7 +458,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -533,7 +534,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -605,7 +606,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -673,7 +674,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -741,7 +742,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -815,7 +816,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -890,7 +891,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = self.RESPONSE_TYPE_RAW
+        response_type = self.RESPONSE_TYPE_UPDATEPOST
         response_list = False
         api_parameters = {
             'type':post_type,
