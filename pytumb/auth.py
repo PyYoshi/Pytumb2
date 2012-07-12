@@ -4,7 +4,6 @@
 __all__ = ['OAuthHandler','BasicAuthHandler']
 
 import urlparse
-import urllib
 
 from oauth_hook import OAuthHook
 from oauth_hook.auth import Token
@@ -15,7 +14,7 @@ from pytumb.error import PytumbError
 
 class AuthHandler:
     """ """
-    def apply_auth(self, url, method, headers, parameters):
+    def apply_auth(self, url, method, parameters, headers=dict(), allow_redirects=True):
         raise NotImplementedError
 
 class BasicAuthHandler(AuthHandler):
@@ -23,12 +22,11 @@ class BasicAuthHandler(AuthHandler):
     def __init__(self,email,password):
         self.__basic_auth = HTTPBasicAuth(username=email,password=password)
 
-    def apply_auth(self, url, method, headers, parameters):
+    def apply_auth(self, url, method, parameters, headers=dict(), allow_redirects=True):
         if method == "GET":
-            url = url + "?" + urllib.urlencode(parameters)
-            return requests.get(url,auth=self.__basic_auth)
+            return requests.get(url, auth=self.__basic_auth, params=parameters, headers=headers, allow_redirects=allow_redirects)
         elif method == "POST":
-            return requests.post(url,parameters,auth=self.__basic_auth)
+            return requests.post(url, auth=self.__basic_auth, params=parameters, headers=headers, allow_redirects=allow_redirects)
         else:
             raise PytumbError("This method(%s) is not supported." % method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
 
@@ -84,18 +82,15 @@ class OAuthHandler(AuthHandler):
     def set_access_token(self,access_token, access_token_secret):
         self.__access_tokens = [access_token,access_token_secret]
 
-    def apply_auth(self, url, http_method, headers, parameters):
+    def apply_auth(self, url, http_method, parameters, headers=dict(), allow_redirects=True):
         if not self.__access_tokens:
             raise PytumbError("Requires access token. Please do OAuthHandler.set_access_token()") # access tokenがない場合Exception
         else:
             self._consumer.token = Token(self.__access_tokens[0],self.__access_tokens[1])
         client = requests.session(hooks={'pre_request':self._consumer})
-        # NOTICE: もしparameters配列のvalueがNoneで不具合が出る場合は、それは除外する関数を作成し対処すること。
         if http_method == "GET":
-            qs = urllib.urlencode(parameters)
-            url = url + '?' + qs
-            return client.get(url)
+            return client.get(url,params=parameters,headers=headers,allow_redirects=allow_redirects)
         elif http_method == "POST":
-            return client.post(url,parameters)
+            return client.post(url,params=parameters,headers=headers,allow_redirects=allow_redirects)
         else:
             raise PytumbError("This method( %s ) is not supported." % http_method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
