@@ -269,7 +269,7 @@ class API:
 
         # Setting
         self.blog_hostname = blog_hostname
-        tag = Utils.join_string(tag,',')
+        tag = Utils.join_string(tag,'+')
         secure = False
         api_method = self.API_METHOD_BLOG
         api_auth_type = self.AUTH_TYPE_APIKEY
@@ -449,7 +449,7 @@ class API:
 
         # Setting
         self.blog_hostname = my_blog_hostname
-        tags = Utils.join_string(tags,'+')
+        tags = Utils.join_string(tags,',')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_TEXT
         secure = False
@@ -525,7 +525,7 @@ class API:
 
         # Setting
         self.blog_hostname = my_blog_hostname
-        tags = Utils.join_string(tags,'+')
+        tags = Utils.join_string(tags,',')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_PHOTO
         secure = False
@@ -597,7 +597,7 @@ class API:
 
         # Setting
         self.blog_hostname = my_blog_hostname
-        tags = Utils.join_string(tags,'+')
+        tags = Utils.join_string(tags,',')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_QUOTE
         secure = False
@@ -665,7 +665,7 @@ class API:
 
         # Setting
         self.blog_hostname = my_blog_hostname
-        tags = Utils.join_string(tags,'+')
+        tags = Utils.join_string(tags,',')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_LINK
         secure = False
@@ -733,7 +733,7 @@ class API:
 
         # Setting
         self.blog_hostname = my_blog_hostname
-        tags = Utils.join_string(tags,'+')
+        tags = Utils.join_string(tags,',')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_CHAT
         secure = False
@@ -807,7 +807,7 @@ class API:
 
         # Setting
         self.blog_hostname = my_blog_hostname
-        tags = Utils.join_string(tags,'+')
+        tags = Utils.join_string(tags,',')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_AUDIO
         secure = False
@@ -882,7 +882,7 @@ class API:
 
         # Setting
         self.blog_hostname = my_blog_hostname
-        tags = Utils.join_string(tags,'+')
+        tags = Utils.join_string(tags,',')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_VIDEO
         secure = False
