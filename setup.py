@@ -23,7 +23,7 @@ setup(name="pytumb",
     zip_safe = False,
     install_requires=[
         'requests>=0.13.2',
-        'requests-oauth>=0.4.1',
+        #'requests-oauth>=0.4.1',
         'pytz>=2012c',
         'simplejson>=2.6.0',
         ]
