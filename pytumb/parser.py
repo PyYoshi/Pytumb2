@@ -43,5 +43,8 @@ class ModelParser(Parser):
     def parse_error(self,content):
         json = self.json_lib.loads(content)
         status_code = json['meta']['status']
-        err_msg = json['meta']['msg']
-        return "status: %d, msg: %s" % (status_code,err_msg)
+        status_msg = json['meta']['msg']
+        err_msg = ''
+        for msg in json['response']['errors']:
+            err_msg += msg
+        return "StatusCode: %d, StatusMsg: %s, ErrorMsg: %s" % (status_code,status_msg,err_msg)
