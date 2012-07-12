@@ -30,7 +30,8 @@ class API:
     RESPONSE_TYPE_BLOGINFO = 'bloginfo'
     RESPONSE_TYPE_AVATAR = 'avatar'
     RESPONSE_TYPE_FOLLOWERS = 'followers'
-    RESPONSE_TYPE_POSTS = 'posts'
+    RESPONSE_TYPE_BLOGPOSTS = 'blogposts'
+    RESPONSE_TYPE_POST = 'post'
     RESPONSE_TYPE_USERINFO = 'userinfo'
     RESPONSE_TYPE_DASHBOARD = 'dashbord'
     RESPONSE_TYPE_LIKES = 'likes'
@@ -74,6 +75,7 @@ class API:
         self.retry_count = retry_count
         self.retry_delay = retry_delay
         self.retry_errors = retry_errors
+        self.blog_hostname = None
 
     def __build_api_url(self,secure, api_method, endpoint):
         """ description """
@@ -112,6 +114,7 @@ class API:
         Utils.check_type(blog_hostname,'blog_hostname',str)
 
         # Setting
+        self.blog_hostname = blog_hostname
         secure = False
         api_method = self.API_METHOD_BLOG
         endpoint = blog_hostname + '/' + 'info'
@@ -155,6 +158,7 @@ class API:
         Utils.check_type(binary,'binary',bool)
 
         # Setting
+        self.blog_hostname = blog_hostname
         if binary:
             allow_redirects=True
         else:
@@ -202,13 +206,14 @@ class API:
         Utils.check_type(offset,'offset',int)
 
         # Setting
+        self.blog_hostname = blog_hostname
         secure = False
         api_method = self.API_METHOD_BLOG
         endpoint = blog_hostname + '/' + 'followers'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
         response_type = self.RESPONSE_TYPE_FOLLOWERS
-        response_list = True
+        response_list = False
         api_parameters = {
             'limit':limit,
             'offset':offset
@@ -239,7 +244,7 @@ class API:
             offset: int, Result to start at
             reblog_info: bool, Indicates whether to return reblog information (specify true or false). Returns the various reblogged_ fields.
             notes_info: bool, Indicates whether to return notes information (specify true or false). Returns note count and note metadata.
-            filter: str, Specifies the post format to return, other than HTML
+            post_filter: str, Specifies the post format to return, other than HTML
                 Must be one of the values: POST_FILTER_NONE, POST_FILTER_RAW, POST_FILTER_TEXT
         Returns:
             none
@@ -263,13 +268,14 @@ class API:
         Utils.check_type(post_filter,'post_filter',str)
 
         # Setting
+        self.blog_hostname = blog_hostname
         tag = Utils.join_string(tag,',')
         secure = False
         api_method = self.API_METHOD_BLOG
         api_auth_type = self.AUTH_TYPE_APIKEY
         http_method = self.HTTP_METHOD_GET
-        response_type = self.RESPONSE_TYPE_POSTS
-        response_list = True
+        response_type = self.RESPONSE_TYPE_BLOGPOSTS
+        response_list = False
         api_parameters = {
             'id':post_id,
             'tag':tag,
@@ -277,7 +283,7 @@ class API:
             'offset':offset,
             'reblog_info':reblog_info,
             'notes_info':notes_info,
-            'post_filter':post_filter,
+            'filter':post_filter,
         }
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
@@ -307,12 +313,13 @@ class API:
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         secure = False
         api_method = self.API_METHOD_BLOG
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'queue'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = self.RESPONSE_TYPE_POSTS
+        response_type = self.RESPONSE_TYPE_POST
         response_list = True
         api_parameters = {
 
@@ -345,12 +352,13 @@ class API:
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         secure = False
         api_method = self.API_METHOD_BLOG
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'draft'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = self.RESPONSE_TYPE_POSTS
+        response_type = self.RESPONSE_TYPE_POST
         response_list = True
         api_parameters = {
 
@@ -383,12 +391,13 @@ class API:
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         secure = False
         api_method = self.API_METHOD_BLOG
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'submission'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = self.RESPONSE_TYPE_POSTS
+        response_type = self.RESPONSE_TYPE_POST
         response_list = True
         api_parameters = {
 
@@ -439,6 +448,7 @@ class API:
         Utils.check_type(title,'title',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         tags = Utils.join_string(tags,'+')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_TEXT
@@ -514,6 +524,7 @@ class API:
         if not source and (not files or files == []): raise PytumbError('Either source or files.')
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         tags = Utils.join_string(tags,'+')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_PHOTO
@@ -585,6 +596,7 @@ class API:
         Utils.check_type(source,'source',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         tags = Utils.join_string(tags,'+')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_QUOTE
@@ -652,6 +664,7 @@ class API:
         Utils.check_type(url,'url',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         tags = Utils.join_string(tags,'+')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_LINK
@@ -719,6 +732,7 @@ class API:
         Utils.check_type(conversation,'conversation',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         tags = Utils.join_string(tags,'+')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_CHAT
@@ -792,6 +806,7 @@ class API:
         if not (external_url and data): raise PytumbError('Either external_url or files.')
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         tags = Utils.join_string(tags,'+')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_AUDIO
@@ -866,6 +881,7 @@ class API:
         if not (embed and data): raise PytumbError('Either source or data.')
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         tags = Utils.join_string(tags,'+')
         date = Utils.datetime2gmtstring(date)
         post_type = self.POST_TYPE_VIDEO
@@ -971,6 +987,7 @@ class API:
         Utils.check_type(post_id,'post_id',str)
 
         # Setting
+        self.blog_hostname = my_blog_hostname
         secure = False
         api_method = self.API_METHOD_BLOG
         endpoint = blog_hostname + '/' + 'post' + '/' + 'delete'
