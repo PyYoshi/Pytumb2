@@ -39,8 +39,11 @@ class Utils:
         Returns:
             datetime.datetime
         """
-        local_dt_gmt = datetime.datetime.strptime(gmtstring,cls.GMT_FORMAT)
-        return cls.GMT.localize(local_dt_gmt)
+        if gmtstring:
+            local_dt_gmt = datetime.datetime.strptime(gmtstring,cls.GMT_FORMAT)
+            return cls.GMT.localize(local_dt_gmt)
+        else:
+            return None
 
     @classmethod
     def datetime2gmtstring(cls,local_dt=datetime.datetime.now()):
@@ -51,8 +54,11 @@ class Utils:
             str, style is '%Y-%m-%d %H:%M:%S %Z'
                 e.g.) '2012-07-10 22:55:46 GMT'
         """
-        local_dt_gmt = cls.GMT.localize(local_dt)
-        return local_dt_gmt.strftime(cls.GMT_FORMAT)
+        if local_dt:
+            local_dt_gmt = cls.GMT.localize(local_dt)
+            return local_dt_gmt.strftime(cls.GMT_FORMAT)
+        else:
+            return None
 
     @staticmethod
     def import_simplejson():
