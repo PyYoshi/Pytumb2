@@ -52,7 +52,7 @@ class OAuthHandler(AuthHandler):
     def __get_request_token(self):
         url = self.__gen_oauth_url('request_token')
         res = requests.post(url,{'oauth_callback':self.callback_url},hooks={'pre_request':self._consumer})
-        qs = urlparse.parse_qs(res.text)
+        qs = Utils.parse_qs(res.text)
         request_token = qs['oauth_token'][0]
         request_secret = qs['oauth_token_secret'][0]
         return request_token, request_secret
