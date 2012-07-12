@@ -46,6 +46,7 @@ class Binder:
         # Generate parser
         parser = ModelParser()
         self.api.last_response = res
+        self.api.last_api_url = self.api_url
         self.api.last_api_parameters = self.api_parameters
         # Parse error
         if res.status_code not in (200,201,301):
