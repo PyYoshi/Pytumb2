@@ -27,6 +27,16 @@ class API:
     AUTH_TYPE_NONE = 'N/A'
     AUTH_TYPE_OAUTH = 'oauth'
 
+    RESPONSE_TYPE_BLOGINFO = 'bloginfo'
+    RESPONSE_TYPE_AVATAR = 'avatar'
+    RESPONSE_TYPE_FOLLOWERS = 'followers'
+    RESPONSE_TYPE_POSTS = 'posts'
+    RESPONSE_TYPE_USERINFO = 'userinfo'
+    RESPONSE_TYPE_DASHBOARD = 'dashbord'
+    RESPONSE_TYPE_LIKES = 'likes'
+    RESPONSE_TYPE_FOLLOWINGS = 'followings'
+    RESPONSE_TYPE_RAW = 'raw'
+
     POST_TYPE_TEXT = 'text'
     POST_TYPE_QUOTE = 'quote'
     POST_TYPE_LINK = 'link'
@@ -37,19 +47,19 @@ class API:
     POST_TYPE_CHAT = 'chat'
 
     POST_FILTER_NONE = None
-    POST_FILETER_RAW = 'raw'
-    POST_FILETER_TEXT = 'text'
+    POST_FILTER_RAW = 'raw'
+    POST_FILTER_TEXT = 'text'
 
     STATE_PUBLISHED = 'published'
     STATE_DRAFT = 'draft'
     STATE_QUEUE = 'queue'
 
-    FILE_MAX_SIZE_IMAGE = 5 # MB
-    FILE_MAX_SIZE_AUDIO = 5 # MB
-    FILE_MAX_SIZE_VIDEO = 5 # MB
+    FILE_MAX_SIZE_IMAGE = 10 # MB
+    FILE_MAX_SIZE_AUDIO = 10 # MB
+    FILE_MAX_SIZE_VIDEO = 100 # MB
 
-    def __init__(self, auth_handler, retry_count=0, retry_delay=0, retry_errors=None):
-        """
+    def __init__(self, auth_handler, retry_count=0, retry_delay=0, retry_errors=list()):
+        """ description
         Args:
             none
         Returns:
@@ -75,13 +85,14 @@ class API:
 
     def __check_file(self,filename, max_size, binary=True):
         """ description """
-        if os.path.getsize(filename) > (max_size* 1024): raise PytumbError('File is too big, must be less than %d' % (max_size * 1024))
+        file_size = os.path.getsize(filename)
+        if file_size > (max_size* 1024): raise PytumbError('File is too big, must be less than %d' % (max_size * 1024))
         if binary:
             mode = 'rb'
         else:
             mode = 'r'
         data = file(filename, mode).read()
-        return data
+        return data, file_size
 
     ############################## Blog Methods ##############################
 
@@ -106,7 +117,7 @@ class API:
         endpoint = blog_hostname + '/' + 'info'
         api_auth_type = self.AUTH_TYPE_APIKEY
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_BLOGINFO
         response_list = False
         api_parameters = {
 
@@ -123,15 +134,16 @@ class API:
         )
         return binder.execute()
 
-    def get_avatar(self,blog_hostname, size=64):
+    def get_avatar(self,blog_hostname, size=64, binary=False):
         """ description
         Args:
             blog_hostname: str,
                 e.g.) staff.tumblr.com
             size: int, avatar image size,
                 Must be one of the values: [16, 24, 30, 40, 48, 64, 96, 128, 512]
+            binary: bool, False is to return avatar img-url. True is to return avatar img-binary(StringIO Object).
         Returns:
-            none
+            str, img-url || {'data':StringIO, 'content_type':str}, img-binary
         Exceptions:
             none
         Warnings:
@@ -140,14 +152,19 @@ class API:
         # Type checking
         Utils.check_type(blog_hostname,'blog_hostname',str)
         if not size in [16, 24, 30, 40, 48, 64, 96, 128, 512]: raise PytumbError('Invalid size. Must be one of the values: 16, 24, 30, 40, 48, 64, 96, 128, 512')
+        Utils.check_type(binary,'binary',bool)
 
         # Setting
+        if binary:
+            allow_redirects=True
+        else:
+            allow_redirects=False
         secure = False
         api_method = self.API_METHOD_BLOG
-        endpoint = blog_hostname + '/' + 'avatar' + '/' + size
+        endpoint = blog_hostname + '/' + 'avatar' + '/' + str(size)
         api_auth_type = self.AUTH_TYPE_NONE
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_AVATAR
         response_list = False
         api_parameters = {
 
@@ -162,7 +179,7 @@ class API:
             response_list=response_list,
             api_parameters=api_parameters
         )
-        return binder.execute()
+        return binder.execute(allow_redirects=allow_redirects)
 
     def get_followers(self,blog_hostname, limit=20, offset=0):
         """ description
@@ -179,7 +196,6 @@ class API:
         Warnings:
             none
         """
-        # TODO: Model部分で次のIDからの取得を試みる機能の追加 next()関数
         # Type checking
         Utils.check_type(blog_hostname,'blog_hostname',str)
         if not limit in range(1,21): raise PytumbError('Invalid limit. Must be one of the values: range(1,21)')
@@ -191,7 +207,7 @@ class API:
         endpoint = blog_hostname + '/' + 'followers'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_FOLLOWERS
         response_list = True
         api_parameters = {
             'limit':limit,
@@ -209,7 +225,7 @@ class API:
         )
         return binder.execute()
 
-    def get_posts(self,blog_hostname, post_type=None, post_id=None, tag=[], limit=20, offset=0, reblog_info=False, notes_info=False, post_filter=POST_FILTER_NONE):
+    def get_posts(self,blog_hostname, post_type=None, post_id=None, tag=list(), limit=20, offset=0, reblog_info=False, notes_info=False, post_filter=POST_FILTER_NONE):
         """ description
         Args:
             blog_hostname: str,
@@ -232,7 +248,6 @@ class API:
         Warnings:
             none
         """
-        # TODO: Model部分で次のIDからの取得を試みる機能の追加 next()関数
         # Type checking
         Utils.check_type(blog_hostname,'blog_hostname',str)
         if post_type in [self.POST_TYPE_TEXT, self.POST_TYPE_QUOTE, self.POST_TYPE_LINK, self.POST_TYPE_ANSWER, self.POST_TYPE_VIDEO, self.POST_TYPE_AUDIO, self.POST_TYPE_PHOTO, self.POST_TYPE_CHAT]:
@@ -253,7 +268,7 @@ class API:
         api_method = self.API_METHOD_BLOG
         api_auth_type = self.AUTH_TYPE_APIKEY
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_POSTS
         response_list = True
         api_parameters = {
             'id':post_id,
@@ -276,7 +291,7 @@ class API:
         )
         return binder.execute()
 
-    def get_posts_queue(self,my_blog_hostname):
+    def get_queue_posts(self,my_blog_hostname):
         """ description
         Args:
             my_blog_hostname: str,
@@ -297,7 +312,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'queue'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_POSTS
         response_list = True
         api_parameters = {
 
@@ -314,7 +329,7 @@ class API:
         )
         return binder.execute()
 
-    def get_posts_draft(self,my_blog_hostname):
+    def get_draft_posts(self,my_blog_hostname):
         """ description
         Args:
             my_blog_hostname: str,
@@ -335,7 +350,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'draft'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_POSTS
         response_list = True
         api_parameters = {
 
@@ -352,7 +367,7 @@ class API:
         )
         return binder.execute()
 
-    def get_posts_submission(self,my_blog_hostname):
+    def get_submission_posts(self,my_blog_hostname):
         """ description
         Args:
             my_blog_hostname: str,
@@ -373,7 +388,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'posts' + '/' + 'submission'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_POSTS
         response_list = True
         api_parameters = {
 
@@ -390,7 +405,7 @@ class API:
         )
         return binder.execute()
 
-    def update_text_post(self,my_blog_hostname, body,state=STATE_PUBLISHED, tags=[],
+    def update_text_post(self,my_blog_hostname, body,state=STATE_PUBLISHED, tags=list(),
                     tweet=None, date=None, markdown=False, slug=None, title=None):
         """ description
         Args:
@@ -432,7 +447,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -457,8 +472,8 @@ class API:
         )
         return binder.execute()
 
-    def update_photo_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=[],
-                        tweet=None, date=None, markdown=False, slug=None,caption=None,link=None,source=None,files=[]):
+    def update_photo_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=list(),
+                        tweet=None, date=None, markdown=False, slug=None,caption=None,link=None,source=None,files=list()):
         """ description
         Args:
             my_blog_hostname: str,
@@ -507,7 +522,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -536,7 +551,7 @@ class API:
         )
         return binder.execute()
 
-    def update_quote_post(self,my_blog_hostname, quote, state=STATE_PUBLISHED, tags=[],
+    def update_quote_post(self,my_blog_hostname, quote, state=STATE_PUBLISHED, tags=list(),
                         tweet=None, date=None, markdown=False, slug=None, source=None):
         """ description
         Args:
@@ -578,7 +593,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -603,7 +618,7 @@ class API:
         )
         return binder.execute()
 
-    def update_link_post(self,my_blog_hostname, url, state=STATE_PUBLISHED, tags=[],
+    def update_link_post(self,my_blog_hostname, url, state=STATE_PUBLISHED, tags=list(),
                         tweet=None, date=None, markdown=False, slug=None, title=None):
         """ description
         Args:
@@ -645,7 +660,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -670,7 +685,7 @@ class API:
         )
         return binder.execute()
 
-    def update_chat_post(self,my_blog_hostname, conversation, state=STATE_PUBLISHED, tags=[],
+    def update_chat_post(self,my_blog_hostname, conversation, state=STATE_PUBLISHED, tags=list(),
                         tweet=None, date=None, markdown=False, slug=None,title=None):
         """ description
         Args:
@@ -712,7 +727,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -737,7 +752,7 @@ class API:
         )
         return binder.execute()
 
-    def update_audio_post(self,my_blog_hostname, data, state=STATE_PUBLISHED, tags=[],
+    def update_audio_post(self,my_blog_hostname, data, state=STATE_PUBLISHED, tags=list(),
                         tweet=None, date=None, markdown=False, slug=None, caption=None, external_url=None):
         """ description
         Args:
@@ -785,7 +800,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -811,7 +826,7 @@ class API:
         )
         return binder.execute()
 
-    def update_video_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=[],
+    def update_video_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=list(),
                         tweet=None, date=None, markdown=False, slug=None, caption=None, embed=None, data=None):
         """ description
         Args:
@@ -859,7 +874,7 @@ class API:
         endpoint = my_blog_hostname + '/' + 'post'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'type':post_type,
@@ -893,7 +908,7 @@ class API:
     ##  requires
     # TODO: API.update_*_post()の引数にpost_idを入れて、/post/editの対応を行う。
 
-    def updatet_reblog(self,my_blog_hostname, post_id, reblog_key, comment=None):
+    def update_reblog(self,my_blog_hostname, post_id, reblog_key, comment=None):
         """ description
         Args:
             my_blog_hostname: str,
@@ -920,7 +935,7 @@ class API:
         endpoint = blog_hostname + '/' + 'post' + '/' + 'reblog'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'id':post_id,
@@ -961,7 +976,7 @@ class API:
         endpoint = blog_hostname + '/' + 'post' + '/' + 'delete'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'id':post_id
@@ -997,7 +1012,7 @@ class API:
         endpoint = 'user'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_USERINFO
         response_list = False
         api_parameters = {
 
@@ -1047,7 +1062,7 @@ class API:
         endpoint = 'dashboard'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_DASHBOARD
         response_list = True
         api_parameters = {
             'limit':limit,
@@ -1091,7 +1106,7 @@ class API:
         endpoint = 'likes'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_LIKES
         response_list = True
         api_parameters = {
             'limit':limit,
@@ -1131,7 +1146,7 @@ class API:
         endpoint = 'following'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_GET
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_FOLLOWINGS
         response_list = True
         api_parameters = {
             'limit':limit,
@@ -1169,7 +1184,7 @@ class API:
         endpoint = 'follow'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'url':blog_url
@@ -1206,7 +1221,7 @@ class API:
         endpoint = 'unfollow'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'url':blog_url
@@ -1245,7 +1260,7 @@ class API:
         endpoint = 'like'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'id':post_id,
@@ -1285,7 +1300,7 @@ class API:
         endpoint = 'unlike'
         api_auth_type = self.AUTH_TYPE_OAUTH
         http_method = self.HTTP_METHOD_POST
-        response_type = ''
+        response_type = self.RESPONSE_TYPE_RAW
         response_list = False
         api_parameters = {
             'id':post_id,
