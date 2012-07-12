@@ -3,13 +3,12 @@
 
 __all__ = ['OAuthHandler','BasicAuthHandler']
 
-import urlparse
-
 from oauth_hook import OAuthHook
 from oauth_hook.auth import Token
 import requests
 from requests.auth import HTTPBasicAuth
 
+from pytumb.utils import Utils
 from pytumb.error import PytumbError
 
 class AuthHandler:
@@ -73,7 +72,7 @@ class OAuthHandler(AuthHandler):
         url = self.__gen_oauth_url('access_token')
         self._consumer.token = Token(self.__request_tokens[0],self.__request_tokens[1])
         res = requests.post(url,{'oauth_verifier':verifier},hooks={'pre_request':self._consumer})
-        qs = urlparse.parse_qs(res.content)
+        qs = Utils.parse_qs(res.content)
         access_token = qs['oauth_token'][0]
         access_token_secret = qs['oauth_token_secret'][0]
         self.__access_tokens = [access_token,access_token_secret]
