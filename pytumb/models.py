@@ -33,7 +33,6 @@ class Model:
         return results
 
 class BlogInfo(Model):
-    # TODO: follow_blog/unfollow_blogの動作チェック
     @classmethod
     def parse(cls, api, json):
         bloginfo = cls(api)
@@ -45,6 +44,18 @@ class BlogInfo(Model):
                     v = Utils.unixtime2datetime(v)
             setattr(bloginfo, k, v)
         return bloginfo
+
+    def follow(self):
+        # TODO: follow関数のサポート
+        raise NotImplementedError
+
+    def unfollow(self):
+        # TODO: unfollow関数のサポート
+        raise NotImplementedError
+
+    def get_avatar(self,binary=False):
+        # TODO: get_avatar関数のサポート
+        raise NotImplementedError
 
 class BlogAvatar(Model):
     @classmethod
@@ -70,6 +81,18 @@ class User(Model):
                     v = Utils.unixtime2datetime(v)
             setattr(user,k,v)
         return user
+
+    def follow(self):
+        # TODO: follow関数のサポート
+        raise NotImplementedError
+
+    def unfollow(self):
+        # TODO: unfollow関数のサポート
+        raise NotImplementedError
+
+    def get_avatar(self,binary=False):
+        # TODO: get_avatar関数のサポート
+        raise NotImplementedError
 
 class BlogFollowers(Model):
     TOTAL = 0
@@ -109,6 +132,22 @@ class Post(Model):
             if obj:
                 results.append(cls.parse(api, obj))
         return results
+
+    def follow(self):
+        # TODO: follow関数のサポート
+        raise NotImplementedError
+
+    def unfollow(self):
+        # TODO: unfollow関数のサポート
+        raise NotImplementedError
+
+    def like_post(self):
+        # TODO: like_post関数のサポート
+        raise NotImplementedError
+
+    def unlike_post(self):
+        # TODO: unlike_post関数のサポート
+        raise NotImplementedError
 
 class TextPost(Post):
     pass
