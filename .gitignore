@@ -13,3 +13,4 @@ keys.py
 build_memo.txt
 *.zip
 log.txt
+*.pickle
