@@ -22,16 +22,26 @@ class BasicAuthHandler(AuthHandler):
         self.__basic_auth = HTTPBasicAuth(username=email,password=password)
 
     def apply_auth(self, url, method, parameters, headers=dict(), allow_redirects=True):
+        try:
+            if parameters['data']:
+                data = {'data':parameters['data']}
+                del parameters['data']
+        except KeyError:
+            data = None
+
         if method == "GET":
             return requests.get(url, auth=self.__basic_auth, params=parameters, headers=headers, allow_redirects=allow_redirects)
         elif method == "POST":
-            return requests.post(url, auth=self.__basic_auth, data=parameters, headers=headers, allow_redirects=allow_redirects)
+            if data:
+                return requests.post(url, auth=self.__basic_auth, params=parameters,data=data, headers=headers, allow_redirects=allow_redirects)
+            else:
+                return requests.post(url, auth=self.__basic_auth, data=parameters, headers=headers, allow_redirects=allow_redirects)
         else:
             raise PytumbError("This method(%s) is not supported." % method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
 
 class OAuthHandler(AuthHandler):
     """ """
-
+    # TODO: xAuthの対応
     OAUTH_HOST = 'www.tumblr.com'
     OAUTH_ROOT = '/oauth/'
 
