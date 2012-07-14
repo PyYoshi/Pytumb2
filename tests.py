@@ -41,11 +41,9 @@ AUDIO_FILE = 'testdata/menuettm.mp3'
 AUDIO_EXTERNAL_URL = 'http://github.com/PyYoshi/Pytumb2/raw/master/testdata/menuettm.mp3'
 VIDEO_FILE = 'testdata/s_hoshi.mp4'
 VIDEO_EMBED = '<iframe width="420" height="315" src="http://www.youtube.com/embed/9bK5Ur0Vi0Y" frameborder="0" allowfullscreen></iframe>'
-
 REBLOG_POSTID = '25090053296'
 REBLOG_REBLOGKEY = 'H6R0DPp0'
 REBLOG_COMMENT = BODY
-
 FOLLOW_BLOG_URL = 'http://staff.tumblr.com/'
 
 class TestPytumb:
