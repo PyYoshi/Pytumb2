@@ -56,9 +56,9 @@ class API:
     STATE_DRAFT = 'draft'
     STATE_QUEUE = 'queue'
 
-    FILE_MAX_SIZE_IMAGE = 10 # MB
-    FILE_MAX_SIZE_AUDIO = 10 # MB
-    FILE_MAX_SIZE_VIDEO = 100 # MB
+    FILE_MAX_SIZE_IMAGE = 5 # MB, 5MB in API?
+    FILE_MAX_SIZE_AUDIO = 5 # MB, 5MB in API?
+    FILE_MAX_SIZE_VIDEO = 5 # MB, 5MB in API?
 
     def __init__(self, auth_handler, retry_count=0, retry_delay=0, retry_errors=list()):
         """ description
@@ -89,13 +89,13 @@ class API:
     def __check_file(self,filename, max_size, binary=True):
         """ description """
         file_size = os.path.getsize(filename)
-        max_size = max_size * 10240
+        max_size = max_size * 1048576 # 1MB = 1048576Bytes
         if file_size > max_size: raise PytumbError('File is too big, must be less than %d' % max_size)
         if binary:
             mode = 'rb'
         else:
             mode = 'r'
-        data = file(filename, mode).read()
+        data = file(filename, mode)
         return data, file_size
 
     ############################## Blog Methods ##############################
@@ -485,7 +485,7 @@ class API:
         return binder.execute()
 
     def update_photo_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None,caption=None,link=None,source=None,files=list()):
+                        tweet=None, date=None, markdown=False, slug=None,caption=None,link=None,source=None,filename=None):
         """ description
         Args:
             my_blog_hostname: str,
@@ -500,9 +500,9 @@ class API:
             caption: str, The user-supplied caption, HTML allowed
             link: str, The "click-through URL" for the photo
             source: str, The photo source URL
-                either source or files
-            files: list, list of file path
-                either source or files
+                either source or filename
+            filename: str, file path
+                either source or filename
         Returns:
             none
         Exceptions:
@@ -510,7 +510,6 @@ class API:
         Warnings:
             none
         """
-        # TODO: バイナリファイルを一緒にポストできるように改良する。
         # Type checking
         if not state in [self.STATE_DRAFT,self.STATE_PUBLISHED,self.STATE_QUEUE]: raise PytumbError('Invalid state. Must be one of the values: API.STATE_PUBLISHED ,API.STATE_DRAFT ,API.STATE_QUEUE')
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
@@ -522,9 +521,9 @@ class API:
         Utils.check_type(caption,'caption',str)
         Utils.check_type(link,'link',str)
         Utils.check_type(source,'source',str)
-        Utils.check_type(files,'files',list)
-        if source and files: raise PytumbError('Either source or files.')
-        if not source and (not files or files == []): raise PytumbError('Either source or files.')
+        Utils.check_type(filename,'filename',str)
+        if source and filename: raise PytumbError('Either source or filename.')
+        if not source and not filename: raise PytumbError('Either source or filename.')
 
         # Setting
         self.blog_hostname = my_blog_hostname
@@ -551,17 +550,8 @@ class API:
             }
         if source:
             api_parameters['source'] = source
-        elif files:
-            raise NotImplementedError
-            data = []
-            total_size = 0
-            for f in files:
-                fp, fp_size = self.__check_file(f, self.FILE_MAX_SIZE_IMAGE)
-                data.append(fp)
-                total_size += fp_size
-            max_size = self.FILE_MAX_SIZE_IMAGE * 10240
-            if total_size > max_size: raise PytumbError('File is too big, must be less than %d' % max_size)
-            api_parameters['data'] = data
+        elif filename:
+            api_parameters['data'] = self.__check_file(filename,self.FILE_MAX_SIZE_IMAGE)[0].read()
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
@@ -803,7 +793,6 @@ class API:
         Warnings:
             none
         """
-        # TODO: バイナリファイルを一緒にポストできるように改良する。
         # Type checking
         if not state in [self.STATE_DRAFT,self.STATE_PUBLISHED,self.STATE_QUEUE]: raise PytumbError('Invalid state. Must be one of the values: API.STATE_PUBLISHED ,API.STATE_DRAFT ,API.STATE_QUEUE')
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
@@ -844,8 +833,8 @@ class API:
             if Utils.urlparse(external_url).scheme == 'https': raise PytumbError('Invalid external_url. Supports only http scheme.')
             api_parameters['external_url'] = external_url
         elif data:
-            raise NotImplementedError
-            api_parameters['data'] = data
+            fp, fp_size = self.__check_file(data,self.FILE_MAX_SIZE_AUDIO)
+            api_parameters['data'] = fp.read()
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
@@ -883,7 +872,6 @@ class API:
         Warnings:
             none
         """
-        # TODO: バイナリファイルを一緒にポストできるように改良する。
         # Type checking
         if not state in [self.STATE_DRAFT,self.STATE_PUBLISHED,self.STATE_QUEUE]: raise PytumbError('Invalid state. Must be one of the values: API.STATE_PUBLISHED ,API.STATE_DRAFT ,API.STATE_QUEUE')
         Utils.check_type(my_blog_hostname,'my_blog_hostname',str)
@@ -923,8 +911,8 @@ class API:
         if embed:
             api_parameters['embed'] = embed
         elif data:
-            raise NotImplementedError
-            api_parameters['data'] = data
+            fp, fp_size = self.__check_file(data,self.FILE_MAX_SIZE_VIDEO)
+            api_parameters['data'] = fp.read()
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
