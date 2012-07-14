@@ -551,7 +551,9 @@ class API:
         if source:
             api_parameters['source'] = source
         elif filename:
-            api_parameters['data'] = self.__check_file(filename,self.FILE_MAX_SIZE_IMAGE)[0].read()
+            fp,fp_size = self.__check_file(filename,self.FILE_MAX_SIZE_IMAGE)
+            api_parameters['data'] = fp.read()
+            fp.close()
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
@@ -835,6 +837,7 @@ class API:
         elif data:
             fp, fp_size = self.__check_file(data,self.FILE_MAX_SIZE_AUDIO)
             api_parameters['data'] = fp.read()
+            fp.close()
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
@@ -913,6 +916,7 @@ class API:
         elif data:
             fp, fp_size = self.__check_file(data,self.FILE_MAX_SIZE_VIDEO)
             api_parameters['data'] = fp.read()
+            fp.close()
         api_url = self.__build_api_url(secure, api_method, endpoint)
         binder = Binder(
             api=self,
