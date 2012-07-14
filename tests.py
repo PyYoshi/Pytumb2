@@ -41,10 +41,9 @@ TITLE = 'Testing Pytumb2!!'
 CAPTION = BODY
 LINK = r'https://github.com/PyYoshi/Pytumb2'
 PHOTO_SOURCE = r'https://github.com/PyYoshi/Pytumb2/raw/master/testdata/test_img.jpg'
-PHOTO_FILES = ['testdata/test_img_.jpg']
-#PHOTO_FILES = ['testdata/test_img.jpg','testdata/test_img2.jpg','testdata/test_img3.jpg']
+PHOTO_FILE = 'testdata/test_img_.jpg'
 QUOTE = BODY
-QUOTE_SOURCE = '<a href="https://github.com/PyYoshi/Pytumb2"> Pytumb2 is awesom. </a>'
+QUOTE_SOURCE = '<a href="https://github.com/PyYoshi/Pytumb2"> Pytumb2 is awesome. </a>'
 CONVERSATION = """ Dev: Who are you?
 Bot: I'm tumblr bot!! """
 AUDIO_FILE = 'testdata/menuettm.mp3'
@@ -158,9 +157,9 @@ class TestPytumb:
         print result.__dict__
         print('===========================')
 
-    def est_j_blog_update_photo_post_binary(self):
+    def test_j_blog_update_photo_post_binary(self):
         print('test_g_update_photo_post_binary')
-        result = self.api.update_photo_post(BLOG_HOSTNAME, files=PHOTO_FILES, caption=CAPTION,slug=SLUG,link=LINK)
+        result = self.api.update_photo_post(BLOG_HOSTNAME, filename=PHOTO_FILE, caption=CAPTION,slug=SLUG,link=LINK)
         print result.__dict__
         print('===========================')
 
@@ -188,7 +187,7 @@ class TestPytumb:
         print result.__dict__
         print('===========================')
 
-    def est_o_blog_update_audio_post_binary(self):
+    def ttest_o_blog_update_audio_post_binary(self):
         print('test_g_blog_update_audio_post_binary')
         result = self.api.update_audio_post(BLOG_HOSTNAME,POST_STATE,TAGS,slug=SLUG,caption=CAPTION,data=AUDIO_FILE)
         print result.__dict__
@@ -200,7 +199,7 @@ class TestPytumb:
         print result.__dict__
         print('===========================')
 
-    def est_q_blog_update_video_post_binary(self):
+    def test_q_blog_update_video_post_binary(self):
         print('test_g_blog_update_video_post_binary')
         result = self.api.update_video_post(BLOG_HOSTNAME,POST_STATE,TAGS,slug=SLUG,caption=CAPTION,data=VIDEO_FILE)
         print result.__dict__
