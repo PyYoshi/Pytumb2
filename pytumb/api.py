@@ -417,7 +417,7 @@ class API:
         return binder.execute()
 
     def update_text_post(self,my_blog_hostname, body,state=STATE_PUBLISHED, tags=list(),
-                    tweet=None, date=None, markdown=False, slug=None, title=None):
+                    tweet=str(), date=None, markdown=False, slug=str(), title=str()):
         """ description
         Args:
             my_blog_hostname: str,
@@ -485,7 +485,7 @@ class API:
         return binder.execute()
 
     def update_photo_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None,caption=None,link=None,source=None,filename=None):
+                        tweet=str(), date=None, markdown=False, slug=str(),caption=str(),link=str(),source=None,filename=None):
         """ description
         Args:
             my_blog_hostname: str,
@@ -565,7 +565,7 @@ class API:
         return binder.execute()
 
     def update_quote_post(self,my_blog_hostname, quote, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None, source=None):
+                        tweet=str(), date=None, markdown=False, slug=str(), source=str()):
         """ description
         Args:
             my_blog_hostname: str,
@@ -633,7 +633,7 @@ class API:
         return binder.execute()
 
     def update_link_post(self,my_blog_hostname, url, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None, title=None):
+                        tweet=str(), date=None, markdown=False, slug=str(), title=str()):
         """ description
         Args:
             my_blog_hostname: str,
@@ -701,7 +701,7 @@ class API:
         return binder.execute()
 
     def update_chat_post(self,my_blog_hostname, conversation, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None,title=None):
+                        tweet=str(), date=None, markdown=False, slug=str(),title=str()):
         """ description
         Args:
             my_blog_hostname: str,
@@ -769,7 +769,7 @@ class API:
         return binder.execute()
 
     def update_audio_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None, caption=None, data=None, external_url=None):
+                        tweet=str(), date=None, markdown=False, slug=str(), caption=str(), data=None, external_url=None):
         """ description
         Args:
             my_blog_hostname: str,
@@ -848,7 +848,7 @@ class API:
         return binder.execute()
 
     def update_video_post(self,my_blog_hostname, state=STATE_PUBLISHED, tags=list(),
-                        tweet=None, date=None, markdown=False, slug=None, caption=None, embed=None, data=None):
+                        tweet=str(), date=None, markdown=False, slug=str(), caption=str(), embed=None, data=None):
         """ description
         Args:
             my_blog_hostname: str,
@@ -931,7 +931,7 @@ class API:
     ##  requires
     # TODO: API.update_*_post()の引数にpost_idを入れて、/post/editの対応を行う。
 
-    def update_reblog(self,my_blog_hostname, post_id, reblog_key, comment=None):
+    def update_reblog(self,my_blog_hostname, post_id, reblog_key, comment=str()):
         """ description
         Args:
             my_blog_hostname: str,
