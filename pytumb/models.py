@@ -275,7 +275,6 @@ class UpdatePost(Raw):
     @classmethod
     def parse(cls, api, json):
         updatepost = cls(api)
-        print(json)
         for k,v in json.items():
             setattr(updatepost,k,v)
         return updatepost
