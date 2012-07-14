@@ -25,7 +25,7 @@ class BasicAuthHandler(AuthHandler):
         if method == "GET":
             return requests.get(url, auth=self.__basic_auth, params=parameters, headers=headers, allow_redirects=allow_redirects)
         elif method == "POST":
-            return requests.post(url, auth=self.__basic_auth, params=parameters, headers=headers, allow_redirects=allow_redirects)
+            return requests.post(url, auth=self.__basic_auth, data=parameters, headers=headers, allow_redirects=allow_redirects)
         else:
             raise PytumbError("This method(%s) is not supported." % method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
 
@@ -87,9 +87,20 @@ class OAuthHandler(AuthHandler):
         else:
             self._consumer.token = Token(self.__access_tokens[0],self.__access_tokens[1])
         client = requests.session(hooks={'pre_request':self._consumer})
+
+        try:
+            if parameters['data']:
+                data = {'data':parameters['data']}
+                del parameters['data']
+        except KeyError:
+            data = None
+
         if http_method == "GET":
             return client.get(url,params=parameters,headers=headers,allow_redirects=allow_redirects)
         elif http_method == "POST":
-            return client.post(url,params=parameters,headers=headers,allow_redirects=allow_redirects)
+            if data:
+                return client.post(url,params=parameters,data=data,headers=headers,allow_redirects=allow_redirects)
+            else:
+                return client.post(url,data=parameters,headers=headers,allow_redirects=allow_redirects)
         else:
             raise PytumbError("This method( %s ) is not supported." % http_method) # methodはgetとpost以外ないので、その他のmethodはExceptionする。
