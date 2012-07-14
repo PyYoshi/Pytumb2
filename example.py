@@ -15,11 +15,11 @@ except ImportError:
 from pytumb import OAuthHandler, API
 
 # Setting
-CONSUMER_KEY = '7sO9KHCtULdffDogO540c6fOkZYceGiRfRacykAakAZCyztTjB'
-CONSUMER_SECRRET_KEY = 'yotVnXdC1JeibEE8LSlAbvEhgP1Lh1qAbUOrvZ48ptJCdvkCwU'
+CONSUMER_KEY = ''
+CONSUMER_SECRRET_KEY = ''
 CALLBACK_URL = 'http://127.0.0.1:8957/login/'
 PICKLE_FILENAME = 'atoken.pickle'
-YOUR_BLOG_HOSTNAME = 'renatestdesu.tumblr.com' # e.g) your_tumblr.tumblr.com
+YOUR_BLOG_HOSTNAME = '' # e.g) your_tumblr.tumblr.com
 TEXT_POST_BODY = 'Hello World!'
 
 def get_access_token():
