@@ -64,7 +64,7 @@ class Utils:
             local_dt_gmt = cls.GMT.localize(local_dt)
             return local_dt_gmt.strftime(cls.GMT_FORMAT)
         else:
-            return None
+            return ''
 
     @staticmethod
     def import_simplejson():
